@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    container_name: postgres_db
+    environment:
+      POSTGRES_DB: NoteApiDb
+      POSTGRES_USER: noteUser
+      POSTGRES_PASSWORD: notePassword
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+  core-service:
+    build: ./note-core-service
+    container_name: core_service
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/NoteApiDb
+      SPRING_DATASOURCE_USERNAME: noteUser
+      SPRING_DATASOURCE_PASSWORD: notePassword
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
+  api-gateway:
+    build: ./note-api-gateway
+    container_name: api_gateway
+    depends_on:
+      - core-service
+    environment:
+      CORE_SERVICE_URL: http://core-service:8080
+    ports:
+      - "8081:8081"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

@@ -1,0 +1,6 @@
+[submodule "note-core-service"]
+	path = note-core-service
+	url = https://github.com/St1ckySmash/note-core-service
+[submodule "note-api-gateway"]
+	path = note-api-gateway
+	url = https://github.com/St1ckySmash/note-api-gateway
